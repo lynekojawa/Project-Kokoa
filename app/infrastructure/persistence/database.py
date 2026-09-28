@@ -17,33 +17,30 @@ class Database:
                 exist_ok=True,
             )
 
-    def connect(self) -> sqlite3.Connection:
-        """Create a configured SQLite connection."""
+    def _connect(self) -> sqlite3.Connection:
+        """Open a connection for internal use"""
         connection = sqlite3.connect(
             str(self.db_path),
             timeout = 5.0
         )
-
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys = ON")
         return connection
 
     @contextmanager
-    def transaction(
-            self,
-    ) -> Iterator[sqlite3.Connection]:
-        """Run database operations in one transaction."""
-        connection = self.connect()
+    def transaction(self) -> Iterator[sqlite3.Connection]:
+        """Provide a connection with automatic commit/rollback."""
+        connection = self._connect()
 
         try:
+            connection.execute("BEGIN")
             with connection:
                 yield connection
         finally:
             connection.close()
 
     def initialize(self) -> None:
-        """Initialize or migrate the database."""
-        #Migration runner will be implemented next.
+        """Initialize the database schema and apply migrations."""
         raise NotImplementedError(
             "Migration runner is not implemented yet."
         )
