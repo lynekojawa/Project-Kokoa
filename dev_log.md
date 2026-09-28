@@ -14,3 +14,13 @@ need to watch out for this but otherwise ready for the SQL schema.
 Certainly GPT Orion is quite intersting he makes plans for three-four rounds then finally make one which I appreciate, but 
 I wouldn't recommend newbie for GPT there are lots of things to concern before you even proceed and easy to lost. 
 Defined folder structure, tomorrow phase 1 implementation start with SQL schema. 
+
+(9/28)
+Continue project.
+
+PYTHONPATH=. pytest tests/persistence/test_database.py -v 
+it doesn't run the test unless I give it full path. is there
+anyway I can do without telling it? YES
+Created toml file and put [tool.pytest.ini_options]
+pythonpath = ["."] and now it works without whole path command! :D 
+
