@@ -25,3 +25,11 @@ Created toml file and put [tool.pytest.ini_options]
 pythonpath = ["."] and now it works without whole path command! :D 
 
 Created: database.py, test_database.py, runner.py, test_migration_runner.py
+
+(9/29)
+Continue project.
+Start it from test_migration_runner.py
+
+
+Edited
+Created: 
