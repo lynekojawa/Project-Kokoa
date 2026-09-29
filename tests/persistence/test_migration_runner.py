@@ -1,4 +1,3 @@
-import sqlite3
 import pytest
 
 from app.infrastructure.persistence.database import Database
@@ -102,6 +101,16 @@ def test_rejects_duplicate_migration_versions(tmp_path):
             ],
         )
 
+def test_rejects_gap_in_migration_versions(tmp_path):
+    database = Database(tmp_path / "test.db")
+    with pytest.raises(ValueError, match="sequential"):
+        MigrationRunner(
+            database,
+            [
+                Migration(1, "first", lambda connection: None),
+                Migration(3, "third", lambda connection: None),
+            ],
+        )
 
 
 

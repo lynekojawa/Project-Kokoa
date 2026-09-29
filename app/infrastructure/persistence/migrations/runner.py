@@ -17,17 +17,21 @@ class MigrationRunner:
         migrations: Sequence[Migration],
     ) -> None:
         self.database = database
-        self.migrations = tuple(migrations)
 
-        versions = [migration.version for migration in self.migrations]
+        versions = [migration.version for migration in migrations]
 
         if any(version <= 0 for version in versions):
             raise ValueError("Migration versions must be positive.")
         if len(versions) != len(set(versions)):
             raise ValueError("Migration versions must be unique.")
 
+        if sorted(versions) != list(range(1, len(versions) +1)):
+            raise ValueError(
+                "Migration versions must be sequential with no gaps."
+            )
+
         self.migrations = tuple(
-            sorted(self.migrations, key=lambda migration: migration.version)
+            sorted(migrations, key=lambda migration: migration.version)
         )
 
     def initialize(self) -> None:

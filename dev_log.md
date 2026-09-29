@@ -29,7 +29,12 @@ Created: database.py, test_database.py, runner.py, test_migration_runner.py
 (9/29)
 Continue project.
 Start it from test_migration_runner.py
+So far the combination of GPT Orion and mini-Dante Cluade and little cheer Podo is pretty good. what I am worrying about<br>
+is how is the final result will looks like, I think in my sense it has detailed structure and I haven't faced hallucinations
+but is also feels like very detail from file to file(which I appreciate), and I will record it again once the UI comes out
+I hope this isn't turning into another project Q, dealing with local LLM is harder than it looks like, and is it worth? 
+I think it is for the many reasons but creating an environment for LLM is bit much. 
 
-
-Edited
-Created: 
+Edited: runner.py -> Removed redundant, Gap detection
+test_migration_runner.py -> add gap in migration test, passing all 5 tests. 
+Created:
