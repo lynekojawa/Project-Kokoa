@@ -38,3 +38,16 @@ I think it is for the many reasons but creating an environment for LLM is bit mu
 Edited: runner.py -> Removed redundant, Gap detection
 test_migration_runner.py -> add gap in migration test, passing all 5 tests. 
 Created: 001_initial_schema.py, 
+
+(9/30)
+Continue project. 
+I feel like recent UI's are very small and the ratio too. Especially when it comes to the code space that is given... 
+I noticed it's been 2 weeks since I canceled my gemini-pro, and I think that was best choice. Gemini-forget things too quickly
+They are good for simple working and fast working, but not at deep work. 
+
+I think it's very interesting """ """ also used for the comments while it can also be a command for the sqlite. 
+
+
+Edited: 001_initial_schema-> typos, commas, all the little things. registry.py-> add comments
+Created: registry.py, test_initial_schema.py
+Next session: Encapsulation in Database class. 

@@ -20,7 +20,7 @@ def apply(connection: sqlite3.Connection)->None:
         """,
         """
         CREATE TABLE exercises (
-            if TEXT PRIMARY KEY,
+            id TEXT PRIMARY KEY,
             name TEXT NOT NULL UNIQUE,
             muscle_group_id TEXT NOT NULL,
             category TEXT NOT NULL,
@@ -37,7 +37,7 @@ def apply(connection: sqlite3.Connection)->None:
         """
         CREATE TABLE exercise_sessions (
             id TEXT PRIMARY KEY,
-            data TEXT NOT NULL,
+            date TEXT NOT NULL,
             duration_minutes REAL NOT NULL
                 CHECK (duration_minutes > 0),
             notes TEXT,
@@ -49,16 +49,16 @@ def apply(connection: sqlite3.Connection)->None:
             id TEXT PRIMARY KEY,
             session_id TEXT NOT NULL,
             exercise_id TEXT NOT NULL,
-            exercise_order INTEGER NOT NULL,
+            exercise_order INTEGER NOT NULL
                 CHECK (exercise_order > 0),
             rest_seconds INTEGER NOT NULL DEFAULT 30
-                CHECK (rest_seconds 0 AND 45),
+                CHECK (rest_seconds BETWEEN 0 AND 45),
             notes TEXT,
             FOREIGN KEY (session_id)
                 REFERENCES exercise_sessions(id)
                 ON DELETE CASCADE,
             FOREIGN KEY (exercise_id)
-                REFERENCES exercises(id)
+                REFERENCES exercises(id),
             UNIQUE (session_id, exercise_order)
         )
         """,
@@ -66,20 +66,115 @@ def apply(connection: sqlite3.Connection)->None:
         CREATE TABLE exercise_sets (
             id TEXT PRIMARY KEY,
             exercise_entry_id TEXT NOT NULL,
-            set_number INTEGER NOT NULL,
+            set_number INTEGER NOT NULL
                 CHECK (set_number > 0),
             repetitions INTEGER NOT NULL
                 CHECK (repetitions > 0),
             weight REAL NOT NULL DEFAULT 0
                 CHECK (weight >= 0),
             unit TEXT NOT NULL
-                CHECK (unit IN ('kg', 'lb')
+                CHECK (unit IN ('kg', 'lb')),
             FOREIGN KEY (exercise_entry_id)
                 REFERENCES exercise_entries(id)
-                ON DELETE CASCADE
+                ON DELETE CASCADE,
             UNIQUE (exercise_entry_id, set_number)
         )
         """,
+        # --------------------------------------------------
+        # Cardio
+        # --------------------------------------------------
+        """
+        CREATE TABLE cardio_sessions (
+            id TEXT PRIMARY KEY,
+            date TEXT NOT NULL,
+            activity_type TEXT NOT NULL
+                CHECK (activity_type IN ('swim', 'walk')),
+            duration_minutes REAL NOT NULL
+                CHECK (duration_minutes > 0),
+            notes TEXT,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        # --------------------------------------------------
+        # Body weight
+        #
+        # Body weight is always stored in kilograms.
+        # No unit column is necessary.
+        # --------------------------------------------------
+        """
+        CREATE TABLE weight_records (
+            id TEXT PRIMARY KEY,
+            date TEXT NOT NULL,
+            weight_kg REAL NOT NULL
+                CHECK (weight_kg > 0),
+            notes TEXT,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        # --------------------------------------------------
+        # Routine templates
+        # --------------------------------------------------
+        """
+        CREATE TABLE routine_templates (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL UNIQUE,
+            description TEXT,
+            active INTEGER NOT NULL DEFAULT 1
+                CHECK (active IN (0, 1)),
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """,
+        """
+        CREATE TABLE routine_variants (
+            id TEXT PRIMARY KEY,
+            template_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            description TEXT,
+            active INTEGER NOT NULL DEFAULT 1
+                CHECK (active IN (0, 1)),
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (template_id)
+                REFERENCES routine_templates(id)
+                ON DELETE CASCADE,
+            UNIQUE (template_id, name)
+        )
+        """,
+        """
+        CREATE TABLE routine_exercises (
+            id TEXT PRIMARY KEY,
+            routine_variant_id TEXT NOT NULL,
+            exercise_id TEXT NOT NULL,
+            exercise_order INTEGER NOT NULL
+                CHECK (exercise_order > 0),
+            rest_seconds INTEGER NOT NULL DEFAULT 30
+                CHECK (rest_seconds BETWEEN 0 AND 45),
+            FOREIGN KEY (routine_variant_id)
+                REFERENCES routine_variants(id)
+                ON DELETE CASCADE,
+            FOREIGN KEY (exercise_id)
+                REFERENCES exercises(id),
+            UNIQUE (routine_variant_id, exercise_order)
+        )
+        """,
+        """
+        CREATE TABLE routine_sets (
+            id TEXT PRIMARY KEY,
+            routine_exercise_id TEXT NOT NULL,
+            set_number INTEGER NOT NULL
+                CHECK (set_number > 0),
+            repetitions INTEGER NOT NULL
+                CHECK (repetitions > 0),
+            weight REAL NOT NULL DEFAULT 0
+                CHECK (weight >= 0),
+            unit TEXT NOT NULL
+                CHECK (unit IN ('kg', 'lb')),
+            FOREIGN KEY (routine_exercise_id)
+                REFERENCES routine_exercises(id)
+                ON DELETE CASCADE,
+            UNIQUE (routine_exercise_id, set_number)
+        )
+        """,
+
         # --------------------------------------------------
         # Recommendations and rest records
         # --------------------------------------------------
@@ -111,7 +206,7 @@ def apply(connection: sqlite3.Connection)->None:
         CREATE TABLE rest_records (
             id TEXT PRIMARY KEY,
             date TEXT NOT NULL,
-            reason TEXT NOT NULL,
+            reason TEXT NOT NULL
                 CHECK (
                     reason IN (
                         'planned', 'recovery', 'thunderstorm',
@@ -119,7 +214,7 @@ def apply(connection: sqlite3.Connection)->None:
                     )
                 ),
             notes TEXT,
-            create_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
         """,
         # --------------------------------------------------
@@ -135,6 +230,7 @@ def apply(connection: sqlite3.Connection)->None:
                 CHECK (enabled IN (0,1)),
             configuration TEXT NOT NULL DEFAULT '{}',
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
         """,
         # --------------------------------------------------
         # Indexes for common date and relationship queries
@@ -165,7 +261,7 @@ def apply(connection: sqlite3.Connection)->None:
         """,
         """
         CREATE INDEX idx_rest_records_date
-        ON rest_records(date
+        ON rest_records(date)
         """,
     ]
 
