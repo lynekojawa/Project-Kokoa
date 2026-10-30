@@ -51,3 +51,12 @@ I think it's very interesting """ """ also used for the comments while it can al
 Edited: 001_initial_schema-> typos, commas, all the little things. registry.py-> add comments
 Created: registry.py, test_initial_schema.py
 Next session: Encapsulation in Database class. 
+
+(10/30)
+
+This project is currently paused. because of 
+1. I was getting very busy 
+2. My exercise routine has changed
+3. I got interested in something else. 
+
+I am planning to come back in this project whenever I have more time! see you then! 
